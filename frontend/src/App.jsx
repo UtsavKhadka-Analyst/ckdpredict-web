@@ -1,10 +1,15 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { useAuth } from './hooks/useAuth'
-import Login from './pages/Login'
+
+import Login              from './pages/Login'
 import PatientPortalLogin from './pages/PatientPortalLogin'
-import AdminDashboard from './pages/AdminDashboard'
-import NephDashboard from './pages/NephDashboard'
-import PatientPortal from './pages/PatientPortal'
+import AdminDashboard     from './pages/AdminDashboard'
+import NephDashboard      from './pages/NephDashboard'
+import PatientPortal      from './pages/PatientPortal'
+import Analytics          from './pages/admin/Analytics'
+import CostModel          from './pages/admin/CostModel'
+import Geographic         from './pages/admin/Geographic'
+import Outreach           from './pages/admin/Outreach'
 
 function RequireAuth({ children, roles }) {
   const { user } = useAuth()
@@ -19,35 +24,30 @@ export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="/patient-login" element={<PatientPortalLogin />} />
+        {/* Public */}
+        <Route path="/login"          element={<Login />} />
+        <Route path="/patient-login"  element={<PatientPortalLogin />} />
 
-        <Route path="/admin" element={
-          <RequireAuth roles={['admin']}>
-            <AdminDashboard />
-          </RequireAuth>
-        } />
+        {/* Admin */}
+        <Route path="/admin"            element={<RequireAuth roles={['admin']}><AdminDashboard /></RequireAuth>} />
+        <Route path="/admin/analytics"  element={<RequireAuth roles={['admin']}><Analytics /></RequireAuth>} />
+        <Route path="/admin/cost"       element={<RequireAuth roles={['admin']}><CostModel /></RequireAuth>} />
+        <Route path="/admin/geographic" element={<RequireAuth roles={['admin']}><Geographic /></RequireAuth>} />
+        <Route path="/admin/outreach"   element={<RequireAuth roles={['admin']}><Outreach /></RequireAuth>} />
 
-        <Route path="/nephrologist" element={
-          <RequireAuth roles={['admin', 'nephrologist']}>
-            <NephDashboard />
-          </RequireAuth>
-        } />
+        {/* Nephrologist */}
+        <Route path="/nephrologist" element={<RequireAuth roles={['admin','nephrologist']}><NephDashboard /></RequireAuth>} />
 
-        <Route path="/portal" element={
-          <RequireAuth roles={['patient']}>
-            <PatientPortal />
-          </RequireAuth>
-        } />
+        {/* Patient */}
+        <Route path="/portal" element={<RequireAuth roles={['patient']}><PatientPortal /></RequireAuth>} />
 
-        {/* Default redirect based on role */}
+        {/* Default redirect */}
         <Route path="/" element={
-          user?.role === 'admin'         ? <Navigate to="/admin" replace /> :
-          user?.role === 'nephrologist'  ? <Navigate to="/nephrologist" replace /> :
-          user?.role === 'patient'       ? <Navigate to="/portal" replace /> :
-                                           <Navigate to="/login" replace />
+          user?.role === 'admin'        ? <Navigate to="/admin" replace /> :
+          user?.role === 'nephrologist' ? <Navigate to="/nephrologist" replace /> :
+          user?.role === 'patient'      ? <Navigate to="/portal" replace /> :
+                                          <Navigate to="/login" replace />
         } />
-
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
