@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import Layout from '../components/Layout'
+import Sidebar from '../components/Sidebar'
 import TierBadge from '../components/TierBadge'
 import api from '../api/client'
 
@@ -54,7 +54,14 @@ export default function NephDashboard() {
   }
 
   return (
-    <Layout title="Individual Patient Record" subtitle="Nephrologist view — KDIGO 2024 clinical decision support">
+    <div className="flex min-h-screen bg-gray-50">
+      <Sidebar />
+      <div className="flex-1 flex flex-col min-w-0">
+        <header className="bg-white border-b border-gray-100 px-6 py-3.5 sticky top-0 z-20 shadow-sm">
+          <h1 className="text-base font-bold text-gray-900">Individual Patient Record</h1>
+          <p className="text-xs text-gray-400 mt-0.5">Nephrologist view — KDIGO 2024 clinical decision support</p>
+        </header>
+        <main className="flex-1 p-6">
       {loading ? <p className="text-gray-400">Loading…</p> : (
         <div className="flex gap-6">
           {/* Sidebar list */}
@@ -207,6 +214,8 @@ export default function NephDashboard() {
           )}
         </div>
       )}
-    </Layout>
+        </main>
+      </div>
+    </div>
   )
 }
