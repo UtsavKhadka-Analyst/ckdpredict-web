@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+*.db
+*.sqlite3
+
+# Environment
+.env
+!.env.example
+
+# Node
+node_modules/
+dist/
+.next/
+build/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# ML models — tracked separately (large files)
+# backend/models/*.pkl
+
+# Logs
+*.log
