@@ -7,6 +7,14 @@ class Settings(BaseSettings):
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
 
+    @property
+    def db_url(self) -> str:
+        url = self.DATABASE_URL
+        # SQLAlchemy 2.x requires postgresql:// not postgres://
+        if url.startswith("postgres://"):
+            url = url.replace("postgres://", "postgresql://", 1)
+        return url
+
     class Config:
         env_file = ".env"
 

@@ -2,10 +2,13 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import DeclarativeBase, sessionmaker
 from core.config import settings
 
+db_url = settings.db_url
+
 engine = create_engine(
-    settings.DATABASE_URL,
-    connect_args={"check_same_thread": False}  # SQLite only — remove for Postgres
-    if settings.DATABASE_URL.startswith("sqlite") else {},
+    db_url,
+    connect_args={"check_same_thread": False} if db_url.startswith("sqlite") else {},
+    pool_pre_ping=True,   # test connection before use — handles Render cold starts
+    pool_recycle=300,     # recycle connections every 5 min
 )
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
