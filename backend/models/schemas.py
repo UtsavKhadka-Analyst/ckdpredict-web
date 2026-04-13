@@ -1,5 +1,6 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 from models.user import Role
+from datetime import datetime
 
 
 # ── Auth ────────────────────────────────────────────────────
@@ -15,12 +16,38 @@ class TokenResponse(BaseModel):
     username: str
 
 
-# ── Patient portal (UUID-prefix login) ─────────────────────
+# ── Patient enrollment (Epic MyChart pattern) ───────────────
 class PatientPortalLoginRequest(BaseModel):
-    portal_id: str  # 8-char UUID prefix
+    portal_id: str   # activation code / UUID prefix
 
 
-# ── Patient record (returned to frontend) ──────────────────
+class PatientRegisterRequest(BaseModel):
+    activation_code: str
+    username: str
+    password: str
+
+    @field_validator('password')
+    @classmethod
+    def password_strength(cls, v):
+        if len(v) < 8:
+            raise ValueError('Password must be at least 8 characters')
+        if not any(c.isupper() for c in v):
+            raise ValueError('Password must contain at least one uppercase letter')
+        if not any(c.isdigit() for c in v):
+            raise ValueError('Password must contain at least one number')
+        return v
+
+    @field_validator('username')
+    @classmethod
+    def username_valid(cls, v):
+        if len(v) < 4:
+            raise ValueError('Username must be at least 4 characters')
+        if ' ' in v:
+            raise ValueError('Username cannot contain spaces')
+        return v.lower()
+
+
+# ── Patient record ──────────────────────────────────────────
 class PatientRecord(BaseModel):
     patient_id: str
     risk_score: float
@@ -32,7 +59,7 @@ class PatientRecord(BaseModel):
     proj_cost: float | None = None
 
 
-# ── Registry row (admin/neph view) ─────────────────────────
+# ── Registry ────────────────────────────────────────────────
 class RegistryRow(BaseModel):
     patient_id: str
     risk_score: float
@@ -72,7 +99,7 @@ class PredictionResult(BaseModel):
     model_b_score: float
 
 
-# ── Dashboard stats (admin) ─────────────────────────────────
+# ── Dashboard stats ─────────────────────────────────────────
 class DashboardStats(BaseModel):
     total_patients: int
     urgent: int
@@ -81,3 +108,13 @@ class DashboardStats(BaseModel):
     low: int
     total_proj_cost: float
     potential_savings: float
+
+
+# ── Audit log ───────────────────────────────────────────────
+class AccessLogEntry(BaseModel):
+    action: str
+    ip_address: str | None
+    accessed_at: datetime
+
+    class Config:
+        from_attributes = True
