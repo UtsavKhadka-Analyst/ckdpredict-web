@@ -1,7 +1,7 @@
 import { NavLink, useNavigate } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 import {
-  LayoutDashboard, Users, DollarSign, MapPin,
+  LayoutDashboard, DollarSign, MapPin,
   Send, LogOut, Activity
 } from 'lucide-react'
 
@@ -11,7 +11,6 @@ const NAV = [
   { to: '/admin/cost',         icon: DollarSign,      label: 'Cost Model' },
   { to: '/admin/geographic',   icon: MapPin,          label: 'Geographic' },
   { to: '/admin/outreach',     icon: Send,            label: 'Outreach' },
-  { to: '/nephrologist',       icon: Users,           label: 'Patient View' },
 ]
 
 export default function Sidebar() {

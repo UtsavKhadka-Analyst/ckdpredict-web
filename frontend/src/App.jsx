@@ -4,7 +4,6 @@ import { useAuth } from './hooks/useAuth'
 import Login              from './pages/Login'
 import PatientPortalLogin from './pages/PatientPortalLogin'
 import AdminDashboard     from './pages/AdminDashboard'
-import NephDashboard      from './pages/NephDashboard'
 import PatientPortal      from './pages/PatientPortal'
 import Analytics          from './pages/admin/Analytics'
 import CostModel          from './pages/admin/CostModel'
@@ -35,17 +34,13 @@ export default function App() {
         <Route path="/admin/geographic" element={<RequireAuth roles={['admin']}><Geographic /></RequireAuth>} />
         <Route path="/admin/outreach"   element={<RequireAuth roles={['admin']}><Outreach /></RequireAuth>} />
 
-        {/* Nephrologist */}
-        <Route path="/nephrologist" element={<RequireAuth roles={['admin','nephrologist']}><NephDashboard /></RequireAuth>} />
-
         {/* Patient */}
         <Route path="/portal" element={<RequireAuth roles={['patient']}><PatientPortal /></RequireAuth>} />
 
         {/* Default redirect */}
         <Route path="/" element={
-          user?.role === 'admin'        ? <Navigate to="/admin" replace /> :
-          user?.role === 'nephrologist' ? <Navigate to="/nephrologist" replace /> :
-          user?.role === 'patient'      ? <Navigate to="/portal" replace /> :
+          user?.role === 'admin'   ? <Navigate to="/admin" replace /> :
+          user?.role === 'patient' ? <Navigate to="/portal" replace /> :
                                           <Navigate to="/login" replace />
         } />
         <Route path="*" element={<Navigate to="/" replace />} />
