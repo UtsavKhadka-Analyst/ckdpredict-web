@@ -108,7 +108,7 @@ export default function RegistryTable({ patients, loading, page, perPage, total,
                   <td className="px-4 py-3"><TierBadge tier={p.urgency_tier} /></td>
                   <td className="px-4 py-3 text-xs text-gray-600">{p.est_months}</td>
                   <td className="px-4 py-3 text-xs text-gray-600">{p.age ?? '—'}</td>
-                  <td className="px-4 py-3 text-xs text-gray-600">{p.gender ?? '—'}</td>
+                  <td className="px-4 py-3 text-xs text-gray-600">{{ M:'Male', F:'Female' }[p.gender] ?? p.gender ?? '—'}</td>
                   <td className="px-4 py-3 text-xs text-gray-600">{p.city ?? '—'}</td>
                   <td className="px-4 py-3 text-xs font-semibold text-gray-700">
                     {p.proj_cost ? `$${Number(p.proj_cost).toLocaleString()}` : '—'}

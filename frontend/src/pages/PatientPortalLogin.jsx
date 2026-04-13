@@ -36,10 +36,15 @@ export default function PatientPortalLogin() {
         </div>
 
         <div className="bg-white rounded-2xl p-8 shadow-2xl">
-          <div className="bg-teal-50 border border-teal-200 rounded-xl px-4 py-3 mb-5">
+          <div className="bg-teal-50 border border-teal-200 rounded-xl px-4 py-3 mb-5 space-y-1.5">
             <p className="text-teal-800 text-xs leading-relaxed">
-              Enter the <strong>8-character Patient Portal ID</strong> from your care letter.
-              Your session expires automatically after <strong>10 minutes</strong> of inactivity.
+              🔒 Enter the <strong>Patient Portal ID</strong> from your care letter to access <strong>only your own</strong> health summary.
+            </p>
+            <p className="text-teal-700 text-xs">
+              ⏱ Session expires automatically after <strong>10 minutes</strong> of inactivity.
+            </p>
+            <p className="text-teal-700 text-xs">
+              🚫 No other patient's data is accessible through this portal.
             </p>
           </div>
 

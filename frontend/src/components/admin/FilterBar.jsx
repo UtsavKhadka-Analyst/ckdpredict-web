@@ -1,7 +1,7 @@
 import { Search, X, SlidersHorizontal } from 'lucide-react'
 
 const TIERS    = ['URGENT', 'HIGH', 'MODERATE', 'LOW']
-const GENDERS  = ['Male', 'Female', 'Other']
+const GENDERS  = [{ label: 'Male', value: 'M' }, { label: 'Female', value: 'F' }]
 const AGE_GROUPS = ['18–40', '41–60', '61–75', '75+']
 
 export default function FilterBar({ filters, onChange, onClear, totalShown, totalAll }) {
@@ -56,7 +56,7 @@ export default function FilterBar({ filters, onChange, onClear, totalShown, tota
           onChange={e => onChange({ gender: e.target.value })}
         >
           <option value="">All genders</option>
-          {GENDERS.map(g => <option key={g}>{g}</option>)}
+          {GENDERS.map(g => <option key={g.value} value={g.value}>{g.label}</option>)}
         </select>
 
         {/* Age group */}
