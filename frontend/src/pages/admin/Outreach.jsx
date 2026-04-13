@@ -68,16 +68,7 @@ CKDPredict Care Team`,
   },
 }
 
-// Fetch patients across all tiers (stratified sample)
-async function fetchAllTiers(limitPerTier = 300) {
-  const [u, h, m, l] = await Promise.all([
-    api.get('/registry/', { params: { limit: limitPerTier, tier: 'URGENT' } }),
-    api.get('/registry/', { params: { limit: limitPerTier, tier: 'HIGH' } }),
-    api.get('/registry/', { params: { limit: limitPerTier, tier: 'MODERATE' } }),
-    api.get('/registry/', { params: { limit: limitPerTier, tier: 'LOW' } }),
-  ])
-  return [...u.data.patients, ...h.data.patients, ...m.data.patients, ...l.data.patients]
-}
+
 
 export default function Outreach() {
   const [patients, setPatients]   = useState([])
@@ -90,7 +81,7 @@ export default function Outreach() {
   const [showPreview, setPreview] = useState(false)
 
   useEffect(() => {
-    fetchAllTiers(300)
+    api.get('/registry/', { params: { limit: 20000 } }).then(r => r.data.patients)
       .then(patients => setPatients(patients))
       .finally(() => setLoading(false))
   }, [])
