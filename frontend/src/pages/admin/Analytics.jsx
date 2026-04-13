@@ -47,9 +47,15 @@ export default function Analytics() {
     fill: i >= 8 ? '#DC2626' : i >= 6 ? '#EA580C' : i >= 4 ? '#CA8A04' : '#14B8A6',
   }))
 
-  // Gender breakdown
+  // Gender breakdown — map M/F to full labels
+  const GENDER_LABEL = { M: 'Male', F: 'Female' }
   const genderMap = {}
-  patients.forEach(p => { if (p.gender) genderMap[p.gender] = (genderMap[p.gender] || 0) + 1 })
+  patients.forEach(p => {
+    if (p.gender) {
+      const label = GENDER_LABEL[p.gender] ?? p.gender
+      genderMap[label] = (genderMap[label] || 0) + 1
+    }
+  })
   const genderData = Object.entries(genderMap).map(([name, value]) => ({ name, value }))
   const genderColors = ['#14B8A6', '#6366F1', '#F59E0B', '#EC4899']
 
@@ -64,13 +70,13 @@ export default function Analytics() {
   })
   const ageData = Object.entries(ageGroups).map(([name, value]) => ({ name, value }))
 
-  // Tier by gender
-  const tgData = ['Male', 'Female'].map(g => ({
-    gender: g,
-    URGENT:   patients.filter(p => p.gender === g && p.urgency_tier === 'URGENT').length,
-    HIGH:     patients.filter(p => p.gender === g && p.urgency_tier === 'HIGH').length,
-    MODERATE: patients.filter(p => p.gender === g && p.urgency_tier === 'MODERATE').length,
-    LOW:      patients.filter(p => p.gender === g && p.urgency_tier === 'LOW').length,
+  // Tier by gender — CSV stores 'M' / 'F'
+  const tgData = [{ key: 'M', label: 'Male' }, { key: 'F', label: 'Female' }].map(({ key, label }) => ({
+    gender: label,
+    URGENT:   patients.filter(p => p.gender === key && p.urgency_tier === 'URGENT').length,
+    HIGH:     patients.filter(p => p.gender === key && p.urgency_tier === 'HIGH').length,
+    MODERATE: patients.filter(p => p.gender === key && p.urgency_tier === 'MODERATE').length,
+    LOW:      patients.filter(p => p.gender === key && p.urgency_tier === 'LOW').length,
   }))
 
   // Avg risk by age group
