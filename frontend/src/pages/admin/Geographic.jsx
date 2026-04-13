@@ -9,16 +9,7 @@ import api from '../../api/client'
 
 const TIER_COLORS = { URGENT: '#DC2626', HIGH: '#EA580C', MODERATE: '#CA8A04', LOW: '#16A34A' }
 
-// Fetch patients across all tiers (stratified sample)
-async function fetchAllTiers(limitPerTier = 300) {
-  const [u, h, m, l] = await Promise.all([
-    api.get('/registry/', { params: { limit: limitPerTier, tier: 'URGENT' } }),
-    api.get('/registry/', { params: { limit: limitPerTier, tier: 'HIGH' } }),
-    api.get('/registry/', { params: { limit: limitPerTier, tier: 'MODERATE' } }),
-    api.get('/registry/', { params: { limit: limitPerTier, tier: 'LOW' } }),
-  ])
-  return [...u.data.patients, ...h.data.patients, ...m.data.patients, ...l.data.patients]
-}
+
 
 export default function Geographic() {
   const [patients, setPatients] = useState([])
@@ -26,7 +17,7 @@ export default function Geographic() {
   const [sortBy, setSortBy]     = useState('urgent')
 
   useEffect(() => {
-    fetchAllTiers(300)
+    api.get('/registry/', { params: { limit: 20000 } }).then(r => r.data.patients)
       .then(patients => setPatients(patients))
       .finally(() => setLoading(false))
   }, [])
