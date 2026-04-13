@@ -18,7 +18,7 @@ export default function Login() {
     try {
       const { data } = await api.post('/auth/login', { username, password })
       login(data)
-      navigate(data.role === 'admin' ? '/admin' : '/nephrologist')
+      navigate('/admin')
     } catch (err) {
       setError(err.response?.data?.detail ?? 'Login failed. Check credentials.')
     } finally {

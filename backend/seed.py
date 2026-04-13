@@ -35,7 +35,6 @@ db = SessionLocal()
 
 SEED_USERS = [
     {"username": "admin", "password": "Admin@CKD2024", "role": Role.admin},
-    {"username": "dr_smith", "password": "Neph@CKD2024", "role": Role.nephrologist},
 ]
 
 for u in SEED_USERS:
