@@ -38,6 +38,17 @@ const CHECKLIST = {
   ],
 }
 
+// Fetch patients across all tiers (stratified sample)
+async function fetchAllTiers(limitPerTier = 300) {
+  const [u, h, m, l] = await Promise.all([
+    api.get('/registry/', { params: { limit: limitPerTier, tier: 'URGENT' } }),
+    api.get('/registry/', { params: { limit: limitPerTier, tier: 'HIGH' } }),
+    api.get('/registry/', { params: { limit: limitPerTier, tier: 'MODERATE' } }),
+    api.get('/registry/', { params: { limit: limitPerTier, tier: 'LOW' } }),
+  ])
+  return [...u.data.patients, ...h.data.patients, ...m.data.patients, ...l.data.patients]
+}
+
 export default function NephDashboard() {
   const [patients, setPatients] = useState([])
   const [selected, setSelected] = useState(null)
@@ -47,8 +58,8 @@ export default function NephDashboard() {
   const [loading, setLoading]   = useState(true)
 
   useEffect(() => {
-    api.get('/registry/', { params: { limit: 500 } })
-      .then(r => { setPatients(r.data.patients); setSelected(r.data.patients[0] ?? null) })
+    fetchAllTiers(300)
+      .then(patients => { setPatients(patients); setSelected(patients[0] ?? null) })
       .finally(() => setLoading(false))
   }, [])
 
