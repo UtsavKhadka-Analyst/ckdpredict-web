@@ -13,6 +13,17 @@ const BENCHMARKS = [
   { label: 'ESKD (dialysis)', cost: 104000, color: '#7C3AED', desc: 'End-stage kidney disease' },
 ]
 
+// Fetch patients across all tiers (stratified sample)
+async function fetchAllTiers(limitPerTier = 300) {
+  const [u, h, m, l] = await Promise.all([
+    api.get('/registry/', { params: { limit: limitPerTier, tier: 'URGENT' } }),
+    api.get('/registry/', { params: { limit: limitPerTier, tier: 'HIGH' } }),
+    api.get('/registry/', { params: { limit: limitPerTier, tier: 'MODERATE' } }),
+    api.get('/registry/', { params: { limit: limitPerTier, tier: 'LOW' } }),
+  ])
+  return [...u.data.patients, ...h.data.patients, ...m.data.patients, ...l.data.patients]
+}
+
 export default function CostModel() {
   const [stats, setStats]       = useState(null)
   const [patients, setPatients] = useState([])
@@ -22,10 +33,10 @@ export default function CostModel() {
   useEffect(() => {
     Promise.all([
       api.get('/registry/stats'),
-      api.get('/registry/', { params: { limit: 500 } }),
-    ]).then(([s, p]) => {
+      fetchAllTiers(300),
+    ]).then(([s, patients]) => {
       setStats(s.data)
-      setPatients(p.data.patients)
+      setPatients(patients)
     }).finally(() => setLoading(false))
   }, [])
 

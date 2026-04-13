@@ -47,12 +47,21 @@ export default function AdminDashboard() {
     if (!silent) setLoading(true)
     else setRefreshing(true)
     try {
-      const [sRes, pRes] = await Promise.all([
+      // Fetch stats + stratified sample across all 4 tiers in parallel
+      const [sRes, urgentRes, highRes, modRes, lowRes] = await Promise.all([
         api.get('/registry/stats'),
-        api.get('/registry/', { params: { limit: 500 } }),
+        api.get('/registry/', { params: { limit: 300, tier: 'URGENT' } }),
+        api.get('/registry/', { params: { limit: 300, tier: 'HIGH' } }),
+        api.get('/registry/', { params: { limit: 300, tier: 'MODERATE' } }),
+        api.get('/registry/', { params: { limit: 300, tier: 'LOW' } }),
       ])
       setStats(sRes.data)
-      setAll(pRes.data.patients)
+      setAll([
+        ...urgentRes.data.patients,
+        ...highRes.data.patients,
+        ...modRes.data.patients,
+        ...lowRes.data.patients,
+      ])
       setLastUpdated(new Date())
       setCountdown(REFRESH_INTERVAL)
     } finally {
