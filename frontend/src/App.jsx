@@ -10,6 +10,7 @@ import Analytics          from './pages/admin/Analytics'
 import CostModel          from './pages/admin/CostModel'
 import Geographic         from './pages/admin/Geographic'
 import Outreach           from './pages/admin/Outreach'
+import ModelValidity      from './pages/admin/ModelValidity'
 
 function RequireAuth({ children, roles }) {
   const { user } = useAuth()
@@ -34,7 +35,8 @@ export default function App() {
           <Route path="/admin/analytics"  element={<Analytics />} />
           <Route path="/admin/cost"       element={<CostModel />} />
           <Route path="/admin/geographic" element={<Geographic />} />
-          <Route path="/admin/outreach"   element={<Outreach />} />
+          <Route path="/admin/outreach"        element={<Outreach />} />
+          <Route path="/admin/model-validity" element={<ModelValidity />} />
         </Route>
 
         {/* Patient */}
