@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { Send, Download, CheckCircle2, Users, X } from 'lucide-react'
 import Sidebar from '../../components/Sidebar'
 import TierBadge from '../../components/TierBadge'
-import api from '../../api/client'
+import { useRegistry } from '../../context/RegistryContext'
 
 const TEMPLATES = {
   URGENT: {
@@ -71,20 +71,13 @@ CKDPredict Care Team`,
 
 
 export default function Outreach() {
-  const [patients, setPatients]   = useState([])
-  const [loading, setLoading]     = useState(true)
+  const { patients, loading }     = useRegistry()
   const [tierFilter, setTier]     = useState('URGENT')
   const [selected, setSelected]   = useState(new Set())
   const [template, setTemplate]   = useState(TEMPLATES.URGENT)
   const [sent, setSent]           = useState(new Set())
   const [sending, setSending]     = useState(false)
   const [showPreview, setPreview] = useState(false)
-
-  useEffect(() => {
-    api.get('/registry/', { params: { limit: 20000 } }).then(r => r.data.patients)
-      .then(patients => setPatients(patients))
-      .finally(() => setLoading(false))
-  }, [])
 
   useEffect(() => {
     setTemplate(TEMPLATES[tierFilter] ?? TEMPLATES.URGENT)

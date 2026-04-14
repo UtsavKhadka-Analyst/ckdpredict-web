@@ -1,26 +1,19 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
   ResponsiveContainer, Cell, Legend
 } from 'recharts'
 import Sidebar from '../../components/Sidebar'
 import TierBadge from '../../components/TierBadge'
-import api from '../../api/client'
+import { useRegistry } from '../../context/RegistryContext'
 
 const TIER_COLORS = { URGENT: '#DC2626', HIGH: '#EA580C', MODERATE: '#CA8A04', LOW: '#16A34A' }
 
 
 
 export default function Geographic() {
-  const [patients, setPatients] = useState([])
-  const [loading, setLoading]   = useState(true)
-  const [sortBy, setSortBy]     = useState('urgent')
-
-  useEffect(() => {
-    api.get('/registry/', { params: { limit: 20000 } }).then(r => r.data.patients)
-      .then(patients => setPatients(patients))
-      .finally(() => setLoading(false))
-  }, [])
+  const { patients, loading } = useRegistry()
+  const [sortBy, setSortBy]   = useState('urgent')
 
   if (loading) return (
     <div className="flex min-h-screen bg-gray-50"><Sidebar />

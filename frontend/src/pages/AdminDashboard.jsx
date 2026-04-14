@@ -1,7 +1,7 @@
-import { useEffect, useState, useCallback, useRef } from 'react'
+import { useEffect, useState } from 'react'
 import {
   Users, AlertTriangle, TrendingUp, DollarSign,
-  Download, RefreshCw, CheckCircle2
+  Download, CheckCircle2
 } from 'lucide-react'
 import Sidebar from '../components/Sidebar'
 import KpiCard from '../components/admin/KpiCard'
@@ -10,8 +10,8 @@ import RegistryTable from '../components/admin/RegistryTable'
 import ChartsPanel from '../components/admin/ChartsPanel'
 import { SkeletonCard } from '../components/admin/SkeletonRow'
 import api from '../api/client'
+import { useRegistry } from '../context/RegistryContext'
 
-const REFRESH_INTERVAL = 60 // seconds
 const TIERS = ['URGENT', 'HIGH', 'MODERATE', 'LOW']
 
 const DEFAULT_FILTERS = {
@@ -29,51 +29,12 @@ function ageGroupFilter(age, group) {
 }
 
 export default function AdminDashboard() {
-  const [stats, setStats]           = useState(null)
-  const [allPatients, setAll]       = useState([])
+  const { patients: allPatients, stats, loading } = useRegistry()
   const [filters, setFilters]       = useState(DEFAULT_FILTERS)
-  const [activeTier, setActiveTier] = useState('')  // KPI card click filter
+  const [activeTier, setActiveTier] = useState('')
   const [page, setPage]             = useState(0)
   const [perPage, setPerPage]       = useState(50)
-  const [loading, setLoading]       = useState(true)
-  const [refreshing, setRefreshing] = useState(false)
-  const [lastUpdated, setLastUpdated] = useState(null)
-  const [countdown, setCountdown]   = useState(REFRESH_INTERVAL)
   const [showCharts, setShowCharts] = useState(true)
-  const intervalRef = useRef(null)
-  const countdownRef = useRef(null)
-
-  const fetchData = useCallback(async (silent = false) => {
-    if (!silent) setLoading(true)
-    else setRefreshing(true)
-    try {
-      // Load all patients in one call — registry is in memory on backend
-      const [sRes, pRes] = await Promise.all([
-        api.get('/registry/stats'),
-        api.get('/registry/', { params: { limit: 20000 } }),
-      ])
-      setStats(sRes.data)
-      setAll(pRes.data.patients)
-      setLastUpdated(new Date())
-      setCountdown(REFRESH_INTERVAL)
-    } finally {
-      setLoading(false)
-      setRefreshing(false)
-    }
-  }, [])
-
-  // Initial load
-  useEffect(() => { fetchData() }, [fetchData])
-
-  // Auto-refresh every 60s
-  useEffect(() => {
-    intervalRef.current = setInterval(() => fetchData(true), REFRESH_INTERVAL * 1000)
-    countdownRef.current = setInterval(() => setCountdown(c => Math.max(0, c - 1)), 1000)
-    return () => {
-      clearInterval(intervalRef.current)
-      clearInterval(countdownRef.current)
-    }
-  }, [fetchData])
 
   // Reset page on filter change
   useEffect(() => setPage(0), [filters, activeTier])
@@ -152,22 +113,6 @@ export default function AdminDashboard() {
             </p>
           </div>
           <div className="flex items-center gap-3">
-            {/* Last updated */}
-            {lastUpdated && (
-              <div className="flex items-center gap-1.5 text-xs text-gray-400">
-                <div className={`w-1.5 h-1.5 rounded-full ${refreshing ? 'bg-yellow-400 animate-pulse' : 'bg-green-400'}`} />
-                {refreshing ? 'Refreshing…' : `Updated ${lastUpdated.toLocaleTimeString()}`}
-                {!refreshing && <span className="text-gray-300">· next in {countdown}s</span>}
-              </div>
-            )}
-            <button
-              onClick={() => fetchData(true)}
-              disabled={refreshing}
-              className="flex items-center gap-1.5 btn-secondary py-1.5 px-3 text-xs"
-            >
-              <RefreshCw size={12} className={refreshing ? 'animate-spin' : ''} />
-              Refresh
-            </button>
             <button
               onClick={() => setShowCharts(v => !v)}
               className="btn-secondary py-1.5 px-3 text-xs"
