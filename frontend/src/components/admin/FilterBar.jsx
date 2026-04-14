@@ -3,10 +3,11 @@ import { Search, X, SlidersHorizontal } from 'lucide-react'
 const TIERS    = ['URGENT', 'HIGH', 'MODERATE', 'LOW']
 const GENDERS  = [{ label: 'Male', value: 'M' }, { label: 'Female', value: 'F' }]
 const AGE_GROUPS = ['18–40', '41–60', '61–75', '75+']
+const MODELS   = [{ label: 'Model A (Diabetic)', value: 'A' }, { label: 'Model B (Non-Diabetic)', value: 'B' }]
 
 export default function FilterBar({ filters, onChange, onClear, totalShown, totalAll }) {
   const hasActive = filters.search || filters.gender || filters.ageGroup ||
-    filters.minRisk > 0 || filters.city
+    filters.minRisk > 0 || filters.city || filters.model
 
   return (
     <div className="bg-white border border-gray-100 rounded-2xl p-4 mb-4 shadow-sm">
@@ -76,6 +77,16 @@ export default function FilterBar({ filters, onChange, onClear, totalShown, tota
           value={filters.city}
           onChange={e => onChange({ city: e.target.value })}
         />
+
+        {/* Model */}
+        <select
+          className="input py-1.5 text-xs w-44"
+          value={filters.model}
+          onChange={e => onChange({ model: e.target.value })}
+        >
+          <option value="">All models</option>
+          {MODELS.map(m => <option key={m.value} value={m.value}>{m.label}</option>)}
+        </select>
       </div>
     </div>
   )

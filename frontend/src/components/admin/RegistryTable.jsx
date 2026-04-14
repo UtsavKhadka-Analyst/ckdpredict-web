@@ -15,6 +15,7 @@ const COLS = [
   { key: 'risk_score',    label: 'Risk Score',    sortable: true },
   { key: 'urgency_tier',  label: 'Tier',          sortable: true },
   { key: 'est_months',    label: 'Timeline',      sortable: false },
+  { key: 'model',         label: 'Model',         sortable: true },
   { key: 'age',           label: 'Age',           sortable: true },
   { key: 'gender',        label: 'Gender',        sortable: false },
   { key: 'city',          label: 'City',          sortable: false },
@@ -74,7 +75,7 @@ export default function RegistryTable({ patients, loading, page, perPage, total,
               : sorted.length === 0
               ? (
                 <tr>
-                  <td colSpan={8} className="px-4 py-16 text-center">
+                  <td colSpan={9} className="px-4 py-16 text-center">
                     <div className="text-4xl mb-3">🔍</div>
                     <p className="text-gray-500 font-medium">No patients match your filters</p>
                     <p className="text-gray-400 text-xs mt-1">Try adjusting the risk score or tier filters</p>
@@ -107,6 +108,14 @@ export default function RegistryTable({ patients, loading, page, perPage, total,
                   </td>
                   <td className="px-4 py-3"><TierBadge tier={p.urgency_tier} /></td>
                   <td className="px-4 py-3 text-xs text-gray-600">{p.est_months}</td>
+                  <td className="px-4 py-3">
+                    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold
+                      ${p.model === 'A'
+                        ? 'bg-blue-50 text-blue-700 border border-blue-200'
+                        : 'bg-purple-50 text-purple-700 border border-purple-200'}`}>
+                      {p.model === 'A' ? 'A · Diabetic' : p.model === 'B' ? 'B · Non-Diabetic' : '—'}
+                    </span>
+                  </td>
                   <td className="px-4 py-3 text-xs text-gray-600">{p.age ?? '—'}</td>
                   <td className="px-4 py-3 text-xs text-gray-600">{{ M:'Male', F:'Female' }[p.gender] ?? p.gender ?? '—'}</td>
                   <td className="px-4 py-3 text-xs text-gray-600">{p.city ?? '—'}</td>
