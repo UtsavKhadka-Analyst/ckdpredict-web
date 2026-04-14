@@ -4,6 +4,7 @@ import {
   LayoutDashboard, DollarSign, MapPin,
   Send, LogOut, Activity
 } from 'lucide-react'
+import ChatAssistant from './ChatAssistant'
 
 const NAV = [
   { to: '/admin',              icon: LayoutDashboard, label: 'Registry',    end: true },
@@ -18,6 +19,7 @@ export default function Sidebar() {
   const navigate = useNavigate()
 
   return (
+    <>
     <aside className="w-56 shrink-0 bg-navy min-h-screen flex flex-col">
       {/* Brand */}
       <div className="px-5 py-5 border-b border-white/10">
@@ -69,5 +71,9 @@ export default function Sidebar() {
         </button>
       </div>
     </aside>
+
+    {/* Floating CKD Assist chat — fixed overlay, appears on all admin pages */}
+    <ChatAssistant />
+    </>
   )
 }

@@ -3,7 +3,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from core.database import engine, Base
 import models.user  # noqa — ensures table is registered
-from routers import auth, registry, patient, predict
+from routers import auth, registry, patient, predict, chat
 
 Base.metadata.create_all(bind=engine)
 
@@ -34,6 +34,7 @@ app.include_router(auth.router)
 app.include_router(registry.router)
 app.include_router(patient.router)
 app.include_router(predict.router)
+app.include_router(chat.router)
 
 
 @app.get("/health")
