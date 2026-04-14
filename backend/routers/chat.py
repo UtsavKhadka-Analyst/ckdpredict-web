@@ -22,16 +22,36 @@ class ChatRequest(BaseModel):
 
 def _build_system_prompt() -> str:
     df = get_registry()
-    total   = len(df)
-    urgent  = int((df["URGENCY_TIER"] == "URGENT").sum())
-    high    = int((df["URGENCY_TIER"] == "HIGH").sum())
-    moderate= int((df["URGENCY_TIER"] == "MODERATE").sum())
-    low     = int((df["URGENCY_TIER"] == "LOW").sum())
-    avg_risk = round(float(df["RISK_SCORE"].mean()), 3)
+    total    = len(df)
+    urgent   = int((df["URGENCY_TIER"] == "URGENT").sum())
+    high     = int((df["URGENCY_TIER"] == "HIGH").sum())
+    moderate = int((df["URGENCY_TIER"] == "MODERATE").sum())
+    low      = int((df["URGENCY_TIER"] == "LOW").sum())
+    avg_risk   = round(float(df["RISK_SCORE"].mean()), 3)
     total_cost = round(float(df["PROJ_COST"].sum()) / 1_000_000, 1)
     savings    = round(float(df["POTENTIAL_SAVING"].sum()) / 1_000_000, 1)
     model_a    = int((df["MODEL"] == "A").sum())
     model_b    = int((df["MODEL"] == "B").sum())
+
+    # City breakdowns
+    city_urgent = (
+        df[df["URGENCY_TIER"] == "URGENT"]
+        .groupby("CITY").size().sort_values(ascending=False).head(10)
+    )
+    city_total = df.groupby("CITY").size().sort_values(ascending=False).head(10)
+    city_urgent_str = "\n".join(f"  {city}: {cnt} urgent" for city, cnt in city_urgent.items())
+    city_total_str  = "\n".join(f"  {city}: {cnt} total" for city, cnt in city_total.items())
+
+    # Age stats by tier
+    age_by_tier = df.groupby("URGENCY_TIER")["AGE"].mean().round(1).to_dict()
+
+    # Gender breakdown
+    gender = df["GENDER"].value_counts().to_dict()
+    male   = gender.get("M", 0)
+    female = gender.get("F", 0)
+
+    # Cost by tier
+    cost_by_tier = df.groupby("URGENCY_TIER")["PROJ_COST"].mean().round(0).to_dict()
 
     return f"""You are CKD Assist — a clinical decision-support AI embedded in CKDPredict,
 a kidney disease risk management application built for Saint Louis University MRP 2026.
@@ -43,10 +63,29 @@ CURRENT PATIENT POPULATION (live data):
 - MODERATE (risk 0.40–0.64, 6–12 months): {moderate:,}
 - LOW (risk < 0.40, > 12 months): {low:,}
 - Average risk score: {avg_risk}
+- Male patients: {male:,} | Female patients: {female:,}
 - Model A (Diabetic pathway): {model_a:,} patients
 - Model B (Non-Diabetic pathway): {model_b:,} patients
 - Total projected cost: ${total_cost}M
 - Potential savings from early intervention: ${savings}M
+
+AVERAGE AGE BY TIER:
+- URGENT: {age_by_tier.get('URGENT', 'N/A')} years
+- HIGH: {age_by_tier.get('HIGH', 'N/A')} years
+- MODERATE: {age_by_tier.get('MODERATE', 'N/A')} years
+- LOW: {age_by_tier.get('LOW', 'N/A')} years
+
+AVERAGE PROJECTED COST BY TIER:
+- URGENT: ${int(cost_by_tier.get('URGENT', 0)):,}
+- HIGH: ${int(cost_by_tier.get('HIGH', 0)):,}
+- MODERATE: ${int(cost_by_tier.get('MODERATE', 0)):,}
+- LOW: ${int(cost_by_tier.get('LOW', 0)):,}
+
+TOP 10 CITIES BY URGENT PATIENTS:
+{city_urgent_str}
+
+TOP 10 CITIES BY TOTAL PATIENTS:
+{city_total_str}
 
 PREDICTION MODEL:
 - Algorithm: XGBoost ensemble (Model A + Model B, equal-weight average)
