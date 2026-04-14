@@ -30,6 +30,7 @@ def _to_row(r) -> RegistryRow:
         gender=r.get("GENDER"),
         city=r.get("CITY"),
         pathway=r.get("PATHWAY"),
+        model=r.get("MODEL"),
         proj_cost=float(r["PROJ_COST"]) if "PROJ_COST" in r and r["PROJ_COST"] == r["PROJ_COST"] else None,
         potential_saving=float(r["POTENTIAL_SAVING"]) if "POTENTIAL_SAVING" in r and r["POTENTIAL_SAVING"] == r["POTENTIAL_SAVING"] else None,
     )

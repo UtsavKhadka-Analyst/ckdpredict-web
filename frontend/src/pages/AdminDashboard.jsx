@@ -15,7 +15,7 @@ const REFRESH_INTERVAL = 60 // seconds
 const TIERS = ['URGENT', 'HIGH', 'MODERATE', 'LOW']
 
 const DEFAULT_FILTERS = {
-  search: '', tier: '', gender: '', ageGroup: '', city: '', minRisk: 0,
+  search: '', tier: '', gender: '', ageGroup: '', city: '', minRisk: 0, model: '',
 }
 
 function ageGroupFilter(age, group) {
@@ -87,6 +87,7 @@ export default function AdminDashboard() {
     if (filters.city && !p.city?.toLowerCase().includes(filters.city.toLowerCase())) return false
     if (filters.minRisk && p.risk_score * 100 < filters.minRisk) return false
     if (!ageGroupFilter(p.age, filters.ageGroup)) return false
+    if (filters.model && p.model !== filters.model) return false
     return true
   })
 

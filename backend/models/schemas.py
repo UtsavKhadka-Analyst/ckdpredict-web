@@ -69,6 +69,7 @@ class RegistryRow(BaseModel):
     gender: str | None = None
     city: str | None = None
     pathway: str | None = None
+    model: str | None = None
     proj_cost: float | None = None
     potential_saving: float | None = None
 
