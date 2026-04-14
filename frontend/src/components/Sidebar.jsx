@@ -2,16 +2,17 @@ import { NavLink, useNavigate } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 import {
   LayoutDashboard, DollarSign, MapPin,
-  Send, LogOut, Activity
+  Send, LogOut, Activity, ShieldCheck
 } from 'lucide-react'
 import ChatAssistant from './ChatAssistant'
 
 const NAV = [
-  { to: '/admin',              icon: LayoutDashboard, label: 'Registry',    end: true },
-  { to: '/admin/analytics',    icon: Activity,        label: 'Analytics' },
-  { to: '/admin/cost',         icon: DollarSign,      label: 'Cost Model' },
-  { to: '/admin/geographic',   icon: MapPin,          label: 'Geographic' },
-  { to: '/admin/outreach',     icon: Send,            label: 'Outreach' },
+  { to: '/admin',                icon: LayoutDashboard, label: 'Registry',      end: true },
+  { to: '/admin/analytics',      icon: Activity,        label: 'Analytics' },
+  { to: '/admin/cost',           icon: DollarSign,      label: 'Cost Model' },
+  { to: '/admin/geographic',     icon: MapPin,          label: 'Geographic' },
+  { to: '/admin/outreach',       icon: Send,            label: 'Outreach' },
+  { to: '/admin/model-validity', icon: ShieldCheck,     label: 'Model Validity' },
 ]
 
 export default function Sidebar() {

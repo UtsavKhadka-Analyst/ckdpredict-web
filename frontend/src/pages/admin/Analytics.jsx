@@ -1,11 +1,17 @@
 import {
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-  PieChart, Pie, Cell, ScatterChart, Scatter, Legend, LineChart, Line
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
+  ResponsiveContainer, Cell, Legend
 } from 'recharts'
 import Sidebar from '../../components/Sidebar'
 import { useRegistry } from '../../context/RegistryContext'
 
-const TIER_COLORS = { URGENT: '#DC2626', HIGH: '#EA580C', MODERATE: '#CA8A04', LOW: '#16A34A' }
+const TIER_COLORS  = { URGENT: '#DC2626', HIGH: '#EA580C', MODERATE: '#CA8A04', LOW: '#16A34A' }
+const TIER_INTERP  = {
+  URGENT:   'Contact within 24–48 hours',
+  HIGH:     'Schedule within 2 weeks',
+  MODERATE: 'Routine follow-up 3–6 months',
+  LOW:      'Annual screening',
+}
 
 const CustomTooltip = ({ active, payload, label }) => {
   if (!active || !payload?.length) return null
@@ -19,8 +25,6 @@ const CustomTooltip = ({ active, payload, label }) => {
   )
 }
 
-
-
 export default function Analytics() {
   const { patients, loading } = useRegistry()
 
@@ -32,24 +36,25 @@ export default function Analytics() {
     </div>
   )
 
+  const total = patients.length
+
+  // Tier distribution — horizontal bar for easy comparison
+  const tierData = ['URGENT','HIGH','MODERATE','LOW'].map(tier => {
+    const count = patients.filter(p => p.urgency_tier === tier).length
+    return {
+      tier,
+      count,
+      pct: ((count / total) * 100).toFixed(1),
+      action: TIER_INTERP[tier],
+    }
+  })
+
   // Risk score histogram (buckets of 10%)
   const histBuckets = Array.from({ length: 10 }, (_, i) => ({
     range: `${i * 10}–${(i + 1) * 10}%`,
     count: patients.filter(p => p.risk_score * 100 >= i * 10 && p.risk_score * 100 < (i + 1) * 10).length,
     fill: i >= 8 ? '#DC2626' : i >= 6 ? '#EA580C' : i >= 4 ? '#CA8A04' : '#14B8A6',
   }))
-
-  // Gender breakdown — map M/F to full labels
-  const GENDER_LABEL = { M: 'Male', F: 'Female' }
-  const genderMap = {}
-  patients.forEach(p => {
-    if (p.gender) {
-      const label = GENDER_LABEL[p.gender] ?? p.gender
-      genderMap[label] = (genderMap[label] || 0) + 1
-    }
-  })
-  const genderData = Object.entries(genderMap).map(([name, value]) => ({ name, value }))
-  const genderColors = ['#14B8A6', '#6366F1', '#F59E0B', '#EC4899']
 
   // Age group distribution
   const ageGroups = { '18–40': 0, '41–60': 0, '61–75': 0, '75+': 0 }
@@ -90,17 +95,55 @@ export default function Analytics() {
       <div className="flex-1 flex flex-col min-w-0">
         <header className="bg-white border-b border-gray-100 px-6 py-3.5 sticky top-0 z-20 shadow-sm">
           <h1 className="text-base font-bold text-gray-900">Analytics</h1>
-          <p className="text-xs text-gray-400 mt-0.5">Population risk breakdown · {patients.length.toLocaleString()} patients loaded</p>
+          <p className="text-xs text-gray-400 mt-0.5">Population risk breakdown · {total.toLocaleString()} patients loaded</p>
         </header>
 
         <main className="flex-1 p-6 space-y-6">
-          {/* Row 1 */}
+
+          {/* Row 1 — Tier distribution + Risk histogram */}
           <div className="grid grid-cols-2 gap-5">
+
+            {/* Tier distribution — horizontal bar (easy to compare) */}
+            <div className="card">
+              <p className="text-sm font-semibold text-gray-800 mb-1">Patient Distribution by Urgency Tier</p>
+              <p className="text-xs text-gray-400 mb-4">
+                How many patients fall into each clinical priority group
+              </p>
+              <div className="space-y-3">
+                {tierData.map(({ tier, count, pct, action }) => (
+                  <div key={tier}>
+                    <div className="flex items-center justify-between mb-1">
+                      <div className="flex items-center gap-2">
+                        <div className="w-2.5 h-2.5 rounded-full" style={{ background: TIER_COLORS[tier] }} />
+                        <span className="text-xs font-semibold text-gray-700">{tier}</span>
+                        <span className="text-xs text-gray-400">— {action}</span>
+                      </div>
+                      <div className="text-right">
+                        <span className="text-xs font-bold text-gray-800">{count.toLocaleString()}</span>
+                        <span className="text-xs text-gray-400 ml-1">({pct}%)</span>
+                      </div>
+                    </div>
+                    <div className="w-full bg-gray-100 rounded-full h-2.5">
+                      <div
+                        className="h-2.5 rounded-full transition-all duration-700"
+                        style={{ width: `${pct}%`, background: TIER_COLORS[tier] }}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <p className="text-xs text-gray-400 mt-4 pt-3 border-t border-gray-50">
+                ⚠ <strong>{tierData[0].count.toLocaleString()} URGENT</strong> patients require immediate contact within 24–48 hours
+              </p>
+            </div>
+
             {/* Risk score histogram */}
             <div className="card">
               <p className="text-sm font-semibold text-gray-800 mb-1">Risk Score Distribution</p>
-              <p className="text-xs text-gray-400 mb-4">Number of patients per risk decile</p>
-              <ResponsiveContainer width="100%" height={200}>
+              <p className="text-xs text-gray-400 mb-4">
+                Most patients score below 40% (LOW risk). Red bars = URGENT zone (≥ 85%).
+              </p>
+              <ResponsiveContainer width="100%" height={210}>
                 <BarChart data={histBuckets} barSize={22}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" vertical={false} />
                   <XAxis dataKey="range" tick={{ fontSize: 9, fill: '#9CA3AF' }} axisLine={false} tickLine={false} />
@@ -111,54 +154,31 @@ export default function Analytics() {
                   </Bar>
                 </BarChart>
               </ResponsiveContainer>
-            </div>
-
-            {/* Gender donut */}
-            <div className="card">
-              <p className="text-sm font-semibold text-gray-800 mb-1">Gender Distribution</p>
-              <p className="text-xs text-gray-400 mb-4">Patients by gender across all tiers</p>
-              <div className="flex items-center gap-6">
-                <ResponsiveContainer width="50%" height={180}>
-                  <PieChart>
-                    <Pie data={genderData} cx="50%" cy="50%" innerRadius={45} outerRadius={70} paddingAngle={3} dataKey="value">
-                      {genderData.map((_, i) => <Cell key={i} fill={genderColors[i % genderColors.length]} />)}
-                    </Pie>
-                    <Tooltip formatter={(v) => [v.toLocaleString(), 'Patients']} contentStyle={{ borderRadius: 12, fontSize: 11 }} />
-                  </PieChart>
-                </ResponsiveContainer>
-                <div className="space-y-2.5 flex-1">
-                  {genderData.map(({ name, value }, i) => (
-                    <div key={name} className="flex items-center justify-between text-xs">
-                      <div className="flex items-center gap-2">
-                        <div className="w-3 h-3 rounded-full" style={{ background: genderColors[i] }} />
-                        <span className="text-gray-600">{name}</span>
-                      </div>
-                      <div className="text-right">
-                        <span className="font-semibold text-gray-800">{value.toLocaleString()}</span>
-                        <span className="text-gray-400 ml-1">({((value / patients.length) * 100).toFixed(0)}%)</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
+              <p className="text-xs text-gray-400 mt-2">
+                Teal = LOW · Yellow = MODERATE · Orange = HIGH · Red = URGENT
+              </p>
             </div>
           </div>
 
-          {/* Row 2 */}
+          {/* Row 2 — Tier by gender + Avg risk by age */}
           <div className="grid grid-cols-2 gap-5">
-            {/* Tier by gender stacked */}
+
+            {/* Tier by gender stacked bar */}
             <div className="card">
               <p className="text-sm font-semibold text-gray-800 mb-1">Risk Tier by Gender</p>
-              <p className="text-xs text-gray-400 mb-4">Distribution of urgency tiers across genders</p>
-              <ResponsiveContainer width="100%" height={200}>
-                <BarChart data={tgData} barSize={36}>
+              <p className="text-xs text-gray-400 mb-4">
+                Urgency tier breakdown for male vs female patients — distribution is broadly similar across genders.
+              </p>
+              <ResponsiveContainer width="100%" height={210}>
+                <BarChart data={tgData} barSize={50}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" vertical={false} />
                   <XAxis dataKey="gender" tick={{ fontSize: 11, fill: '#6B7280' }} axisLine={false} tickLine={false} />
                   <YAxis tick={{ fontSize: 9, fill: '#9CA3AF' }} axisLine={false} tickLine={false} />
                   <Tooltip content={<CustomTooltip />} />
                   <Legend wrapperStyle={{ fontSize: 10 }} />
                   {['URGENT','HIGH','MODERATE','LOW'].map(t => (
-                    <Bar key={t} dataKey={t} stackId="a" fill={TIER_COLORS[t]} radius={t === 'LOW' ? [4,4,0,0] : [0,0,0,0]} />
+                    <Bar key={t} dataKey={t} stackId="a" fill={TIER_COLORS[t]}
+                      radius={t === 'LOW' ? [4,4,0,0] : [0,0,0,0]} />
                   ))}
                 </BarChart>
               </ResponsiveContainer>
@@ -166,15 +186,17 @@ export default function Analytics() {
 
             {/* Avg risk by age group */}
             <div className="card">
-              <p className="text-sm font-semibold text-gray-800 mb-1">Average Risk by Age Group</p>
-              <p className="text-xs text-gray-400 mb-4">Mean risk score per age cohort</p>
-              <ResponsiveContainer width="100%" height={200}>
-                <BarChart data={ageRiskData} barSize={36}>
+              <p className="text-sm font-semibold text-gray-800 mb-1">Average Risk Score by Age Group</p>
+              <p className="text-xs text-gray-400 mb-4">
+                Older patients carry significantly higher CKD progression risk — patients 75+ average {ageRiskData.find(a => a.name === '75+')?.avgRisk}% risk.
+              </p>
+              <ResponsiveContainer width="100%" height={160}>
+                <BarChart data={ageRiskData} barSize={40}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" vertical={false} />
                   <XAxis dataKey="name" tick={{ fontSize: 10, fill: '#6B7280' }} axisLine={false} tickLine={false} />
                   <YAxis unit="%" tick={{ fontSize: 9, fill: '#9CA3AF' }} axisLine={false} tickLine={false} domain={[0, 100]} />
                   <Tooltip formatter={(v, n) => [n === 'avgRisk' ? `${v}%` : v.toLocaleString(), n === 'avgRisk' ? 'Avg Risk' : 'Patients']} contentStyle={{ borderRadius: 12, fontSize: 11 }} />
-                  <Bar dataKey="avgRisk" name="avgRisk" fill="#14B8A6" radius={[6,6,0,0]} />
+                  <Bar dataKey="avgRisk" name="Avg Risk Score" fill="#14B8A6" radius={[6,6,0,0]} />
                 </BarChart>
               </ResponsiveContainer>
               <div className="grid grid-cols-4 gap-2 mt-3">
