@@ -1,10 +1,10 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
   ResponsiveContainer, Cell, ReferenceLine
 } from 'recharts'
 import Sidebar from '../../components/Sidebar'
-import api from '../../api/client'
+import { useRegistry } from '../../context/RegistryContext'
 
 const BENCHMARKS = [
   { label: 'No CKD',       cost: 13604,  color: '#16A34A', desc: 'Baseline Medicare beneficiary' },
@@ -16,20 +16,8 @@ const BENCHMARKS = [
 
 
 export default function CostModel() {
-  const [stats, setStats]       = useState(null)
-  const [patients, setPatients] = useState([])
-  const [loading, setLoading]   = useState(true)
+  const { patients, stats, loading } = useRegistry()
   const [intervention, setIntervention] = useState(30) // % of high-risk reached
-
-  useEffect(() => {
-    Promise.all([
-      api.get('/registry/stats'),
-      api.get('/registry/', { params: { limit: 20000 } }).then(r => r.data.patients),
-    ]).then(([s, patients]) => {
-      setStats(s.data)
-      setPatients(patients)
-    }).finally(() => setLoading(false))
-  }, [])
 
   if (loading) return (
     <div className="flex min-h-screen bg-gray-50"><Sidebar />

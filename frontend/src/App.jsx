@@ -1,5 +1,6 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate, Outlet } from 'react-router-dom'
 import { useAuth } from './hooks/useAuth'
+import { RegistryProvider } from './context/RegistryContext'
 
 import Login              from './pages/Login'
 import PatientPortalLogin from './pages/PatientPortalLogin'
@@ -27,12 +28,14 @@ export default function App() {
         <Route path="/login"          element={<Login />} />
         <Route path="/patient-login"  element={<PatientPortalLogin />} />
 
-        {/* Admin */}
-        <Route path="/admin"            element={<RequireAuth roles={['admin']}><AdminDashboard /></RequireAuth>} />
-        <Route path="/admin/analytics"  element={<RequireAuth roles={['admin']}><Analytics /></RequireAuth>} />
-        <Route path="/admin/cost"       element={<RequireAuth roles={['admin']}><CostModel /></RequireAuth>} />
-        <Route path="/admin/geographic" element={<RequireAuth roles={['admin']}><Geographic /></RequireAuth>} />
-        <Route path="/admin/outreach"   element={<RequireAuth roles={['admin']}><Outreach /></RequireAuth>} />
+        {/* Admin — one RegistryProvider wraps all routes; data fetched once, shared across pages */}
+        <Route element={<RequireAuth roles={['admin']}><RegistryProvider><Outlet /></RegistryProvider></RequireAuth>}>
+          <Route path="/admin"            element={<AdminDashboard />} />
+          <Route path="/admin/analytics"  element={<Analytics />} />
+          <Route path="/admin/cost"       element={<CostModel />} />
+          <Route path="/admin/geographic" element={<Geographic />} />
+          <Route path="/admin/outreach"   element={<Outreach />} />
+        </Route>
 
         {/* Patient */}
         <Route path="/portal" element={<RequireAuth roles={['patient']}><PatientPortal /></RequireAuth>} />
