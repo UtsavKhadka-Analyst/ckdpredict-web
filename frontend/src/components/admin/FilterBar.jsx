@@ -5,9 +5,9 @@ const GENDERS  = [{ label: 'Male', value: 'M' }, { label: 'Female', value: 'F' }
 const AGE_GROUPS = ['18–40', '41–60', '61–75', '75+']
 const MODELS   = [{ label: 'Model A (Diabetic)', value: 'A' }, { label: 'Model B (Non-Diabetic)', value: 'B' }]
 
-export default function FilterBar({ filters, onChange, onClear, totalShown, totalAll }) {
+export default function FilterBar({ filters, onChange, onClear, totalShown, totalAll, states = [] }) {
   const hasActive = filters.search || filters.gender || filters.ageGroup ||
-    filters.minRisk > 0 || filters.city || filters.model
+    filters.minRisk > 0 || filters.city || filters.model || filters.state
 
   return (
     <div className="bg-white border border-gray-100 rounded-2xl p-4 mb-4 shadow-sm">
@@ -87,6 +87,18 @@ export default function FilterBar({ filters, onChange, onClear, totalShown, tota
           <option value="">All models</option>
           {MODELS.map(m => <option key={m.value} value={m.value}>{m.label}</option>)}
         </select>
+
+        {/* State */}
+        {states.length > 1 && (
+          <select
+            className="input py-1.5 text-xs w-36"
+            value={filters.state}
+            onChange={e => onChange({ state: e.target.value })}
+          >
+            <option value="">All states</option>
+            {states.map(s => <option key={s} value={s}>{s}</option>)}
+          </select>
+        )}
       </div>
     </div>
   )

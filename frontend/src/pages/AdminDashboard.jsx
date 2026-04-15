@@ -15,7 +15,7 @@ import { useRegistry } from '../context/RegistryContext'
 const TIERS = ['URGENT', 'HIGH', 'MODERATE', 'LOW']
 
 const DEFAULT_FILTERS = {
-  search: '', tier: '', gender: '', ageGroup: '', city: '', minRisk: 0, model: '',
+  search: '', tier: '', gender: '', ageGroup: '', city: '', minRisk: 0, model: '', state: '',
 }
 
 function ageGroupFilter(age, group) {
@@ -49,8 +49,12 @@ export default function AdminDashboard() {
     if (filters.minRisk && p.risk_score * 100 < filters.minRisk) return false
     if (!ageGroupFilter(p.age, filters.ageGroup)) return false
     if (filters.model && p.model !== filters.model) return false
+    if (filters.state && p.state !== filters.state) return false
     return true
   })
+
+  // Derive unique states from loaded patients (auto-updates when new states added)
+  const states = [...new Set(allPatients.map(p => p.state).filter(Boolean))].sort()
 
   const paginated = filtered.slice(page * perPage, (page + 1) * perPage)
 
@@ -192,6 +196,7 @@ export default function AdminDashboard() {
             onClear={handleClearFilters}
             totalShown={filtered.length}
             totalAll={allPatients.length}
+            states={states}
           />
 
           {/* Table */}
