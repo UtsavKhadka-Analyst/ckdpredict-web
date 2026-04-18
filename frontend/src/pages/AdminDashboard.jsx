@@ -8,6 +8,7 @@ import KpiCard from '../components/admin/KpiCard'
 import FilterBar from '../components/admin/FilterBar'
 import RegistryTable from '../components/admin/RegistryTable'
 import ChartsPanel from '../components/admin/ChartsPanel'
+import PatientGuidancePanel from '../components/admin/PatientGuidancePanel'
 import { SkeletonCard } from '../components/admin/SkeletonRow'
 import api from '../api/client'
 import { useRegistry } from '../context/RegistryContext'
@@ -34,7 +35,8 @@ export default function AdminDashboard() {
   const [activeTier, setActiveTier] = useState('')
   const [page, setPage]             = useState(0)
   const [perPage, setPerPage]       = useState(50)
-  const [showCharts, setShowCharts] = useState(true)
+  const [showCharts, setShowCharts]       = useState(true)
+  const [selectedPatient, setSelectedPatient] = useState(null)
 
   // Reset page on filter change
   useEffect(() => setPage(0), [filters, activeTier])
@@ -200,6 +202,10 @@ export default function AdminDashboard() {
           />
 
           {/* Table */}
+          <p className="text-xs text-gray-400 mb-2 ml-1">
+            💡 Click any row to view KDIGO 2024 clinical guidance for that patient
+          </p>
+
           <RegistryTable
             patients={paginated}
             loading={loading}
@@ -208,6 +214,12 @@ export default function AdminDashboard() {
             total={filtered.length}
             onPage={setPage}
             onPerPage={(n) => { setPerPage(n); setPage(0) }}
+            onSelectPatient={setSelectedPatient}
+          />
+
+          <PatientGuidancePanel
+            patient={selectedPatient}
+            onClose={() => setSelectedPatient(null)}
           />
         </main>
 

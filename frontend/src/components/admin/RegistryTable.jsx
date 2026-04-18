@@ -29,7 +29,7 @@ function SortIcon({ col, sortKey, dir }) {
     : <ChevronDown size={12} className="text-teal-500 ml-1" />
 }
 
-export default function RegistryTable({ patients, loading, page, perPage, total, onPage, onPerPage }) {
+export default function RegistryTable({ patients, loading, page, perPage, total, onPage, onPerPage, onSelectPatient }) {
   const [sortKey, setSortKey] = useState('risk_score')
   const [sortDir, setSortDir] = useState('desc')
 
@@ -83,7 +83,11 @@ export default function RegistryTable({ patients, loading, page, perPage, total,
                 </tr>
               )
               : sorted.map(p => (
-                <tr key={p.patient_id} className={`transition-colors ${TIER_ROW[p.urgency_tier] ?? 'hover:bg-gray-50'}`}>
+                <tr
+                  key={p.patient_id}
+                  onClick={() => onSelectPatient?.(p)}
+                  className={`transition-colors cursor-pointer ${TIER_ROW[p.urgency_tier] ?? 'hover:bg-gray-50'}`}
+                >
                   <td className="px-4 py-3 font-mono text-xs text-gray-500">
                     {p.patient_id.slice(0, 8)}
                     <span className="text-gray-300">…</span>
