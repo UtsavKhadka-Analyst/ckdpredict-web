@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { HeartPulse } from 'lucide-react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 import api from '../api/client'
@@ -32,10 +33,7 @@ export default function Login() {
         {/* Brand */}
         <div className="text-center mb-8">
           <div className="w-14 h-14 rounded-2xl bg-teal-500 flex items-center justify-center mx-auto mb-4 shadow-lg">
-            <svg viewBox="0 0 24 24" fill="none" className="w-8 h-8" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M12 3C8 3 5 6.5 5 10c0 2.5 1 4.5 2.5 6C9 17.5 9.5 20 11 21h2c1.5-1 2-3.5 3.5-5C18 14.5 19 12.5 19 10c0-3.5-3-7-7-7z"/>
-              <path d="M12 3v6M9.5 7.5C10.5 9 11 10.5 11 12M14.5 7.5C13.5 9 13 10.5 13 12"/>
-            </svg>
+            <HeartPulse size={30} className="text-white" />
           </div>
           <h1 className="text-white text-2xl font-bold">CKDPredict</h1>
           <p className="text-white/50 text-sm mt-1">Clinical Decision Support · Saint Louis University</p>
