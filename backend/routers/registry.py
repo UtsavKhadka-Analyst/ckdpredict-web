@@ -42,7 +42,7 @@ def _to_row(r) -> RegistryRow:
 def get_registry_list(
     tier: str | None = Query(None, description="Filter by URGENCY_TIER"),
     min_risk: float = Query(0.0, ge=0, le=1),
-    limit: int = Query(100, le=20000),
+    limit: int = Query(100, le=30000),
     offset: int = Query(0, ge=0),
     _: User = Depends(require_nephrologist),
 ):
