@@ -11,14 +11,14 @@ const TIER_ROW = {
 }
 
 const COLS = [
-  { key: 'patient_id',    label: 'Patient ID',    sortable: true },
+  { key: 'patient_id',    label: 'Patient',       sortable: true },
   { key: 'risk_score',    label: 'Risk Score',    sortable: true },
   { key: 'urgency_tier',  label: 'Tier',          sortable: true },
   { key: 'est_months',    label: 'Timeline',      sortable: false },
   { key: 'model',         label: 'Model',         sortable: true },
   { key: 'age',           label: 'Age',           sortable: true },
-  { key: 'gender',        label: 'Gender',        sortable: false },
-  { key: 'city',          label: 'City',          sortable: false },
+  { key: 'gender',        label: 'Sex',           sortable: false },
+  { key: 'city',          label: 'City / State',  sortable: false },
   { key: 'proj_cost',     label: 'Proj. Cost',    sortable: true },
 ]
 
@@ -88,9 +88,12 @@ export default function RegistryTable({ patients, loading, page, perPage, total,
                   onClick={() => onSelectPatient?.(p)}
                   className={`transition-colors cursor-pointer ${TIER_ROW[p.urgency_tier] ?? 'hover:bg-gray-50'}`}
                 >
-                  <td className="px-4 py-3 font-mono text-xs text-gray-500">
-                    {p.patient_id.slice(0, 8)}
-                    <span className="text-gray-300">…</span>
+                  <td className="px-4 py-3">
+                    {p.first && p.last
+                      ? <><p className="text-xs font-semibold text-gray-800">{p.first.replace(/\d+/g, '').trim()} {p.last.replace(/\d+/g, '').trim()}</p>
+                          <p className="text-xs font-mono text-gray-400 mt-0.5">{p.patient_id.slice(0, 8)}…</p></>
+                      : <span className="font-mono text-xs text-gray-500">{p.patient_id.slice(0, 8)}…</span>
+                    }
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-2">
@@ -122,7 +125,10 @@ export default function RegistryTable({ patients, loading, page, perPage, total,
                   </td>
                   <td className="px-4 py-3 text-xs text-gray-600">{p.age ?? '—'}</td>
                   <td className="px-4 py-3 text-xs text-gray-600">{{ M:'Male', F:'Female' }[p.gender] ?? p.gender ?? '—'}</td>
-                  <td className="px-4 py-3 text-xs text-gray-600">{p.city ?? '—'}</td>
+                  <td className="px-4 py-3 text-xs text-gray-600">
+                    {p.city ?? '—'}
+                    {p.state && <span className="text-gray-400">, {p.state}</span>}
+                  </td>
                   <td className="px-4 py-3 text-xs font-semibold text-gray-700">
                     {p.proj_cost ? `$${Number(p.proj_cost).toLocaleString()}` : '—'}
                   </td>

@@ -65,6 +65,8 @@ class RegistryRow(BaseModel):
     risk_score: float
     urgency_tier: str
     est_months: str
+    first: str | None = None
+    last: str | None = None
     age: float | None = None
     gender: str | None = None
     city: str | None = None

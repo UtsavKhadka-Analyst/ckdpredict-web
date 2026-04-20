@@ -25,10 +25,15 @@ export default function Sidebar() {
       {/* Brand */}
       <div className="px-5 py-5 border-b border-white/10">
         <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-lg bg-teal-500 flex items-center justify-center text-base">🫘</div>
+          <div className="w-8 h-8 rounded-lg bg-teal-500 flex items-center justify-center shrink-0">
+            <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 3C8 3 5 6.5 5 10c0 2.5 1 4.5 2.5 6C9 17.5 9.5 20 11 21h2c1.5-1 2-3.5 3.5-5C18 14.5 19 12.5 19 10c0-3.5-3-7-7-7z"/>
+              <path d="M12 3v6M9.5 7.5C10.5 9 11 10.5 11 12M14.5 7.5C13.5 9 13 10.5 13 12"/>
+            </svg>
+          </div>
           <div>
             <p className="text-white font-bold text-sm leading-tight">CKDPredict</p>
-            <p className="text-white/40 text-xs">SLU MRP 2026</p>
+            <p className="text-white/40 text-xs">Clinical Decision Support</p>
           </div>
         </div>
       </div>

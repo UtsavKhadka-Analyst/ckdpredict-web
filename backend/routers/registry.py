@@ -29,6 +29,8 @@ def _to_row(r) -> RegistryRow:
         est_months=str(r.get("EST_MONTHS", "")),
         age=float(r["AGE"]) if "AGE" in r and r["AGE"] == r["AGE"] else None,
         gender=r.get("GENDER"),
+        first=r.get("FIRST"),
+        last=r.get("LAST"),
         city=r.get("CITY"),
         state=r.get("STATE"),
         pathway=r.get("PATHWAY"),
