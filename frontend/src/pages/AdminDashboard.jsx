@@ -30,7 +30,7 @@ function ageGroupFilter(age, group) {
 }
 
 export default function AdminDashboard() {
-  const { patients: allPatients, stats, loading } = useRegistry()
+  const { patients: allPatients, stats, loading, error } = useRegistry()
   const [filters, setFilters]       = useState(DEFAULT_FILTERS)
   const [activeTier, setActiveTier] = useState('')
   const [page, setPage]             = useState(0)
@@ -132,6 +132,14 @@ export default function AdminDashboard() {
         </header>
 
         <main className="flex-1 p-6">
+          {/* Error banner */}
+          {error && (
+            <div className="bg-red-50 border border-red-200 rounded-xl px-4 py-2.5 mb-4 flex items-center justify-between">
+              <p className="text-xs text-red-700 font-medium">⚠ {error}</p>
+              <button onClick={() => window.location.reload()} className="text-xs text-red-600 underline font-semibold ml-4">Refresh</button>
+            </div>
+          )}
+
           {/* Disclaimer */}
           <div className="bg-blue-50 border border-blue-100 rounded-xl px-4 py-2.5 mb-5 flex items-center gap-2">
             <CheckCircle2 size={14} className="text-blue-500 shrink-0" />
