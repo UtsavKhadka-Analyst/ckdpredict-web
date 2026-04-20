@@ -70,7 +70,7 @@ export default function ModelValidity() {
         <header className="bg-white border-b border-gray-100 px-6 py-3.5 sticky top-0 z-20 shadow-sm">
           <h1 className="text-base font-bold text-gray-900">Model Validity & Performance</h1>
           <p className="text-xs text-gray-400 mt-0.5">
-            XGBoost ensemble evaluated on {(14384+632+168+2431).toLocaleString()} patients · Synthea synthetic EHR data
+            XGBoost ensemble · Metrics computed on Massachusetts training cohort (17,615 patients) · Synthea synthetic EHR data
           </p>
         </header>
 

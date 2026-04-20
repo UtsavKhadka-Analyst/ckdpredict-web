@@ -11,7 +11,7 @@ export function RegistryProvider({ children }) {
   useEffect(() => {
     Promise.all([
       api.get('/registry/stats'),
-      api.get('/registry/', { params: { limit: 20000 } }),
+      api.get('/registry/', { params: { limit: 25000 } }),
     ]).then(([s, r]) => {
       setStats(s.data)
       setPatients(r.data.patients)
