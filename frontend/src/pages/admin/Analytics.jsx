@@ -76,6 +76,18 @@ export default function Analytics() {
     LOW:      patients.filter(p => p.gender === key && p.urgency_tier === 'LOW').length,
   }))
 
+  // State distribution
+  const stateMap = {}
+  patients.forEach(p => {
+    const st = p.state || 'Unknown'
+    if (!stateMap[st]) stateMap[st] = { state: st, URGENT: 0, HIGH: 0, MODERATE: 0, LOW: 0, total: 0, totalCost: 0 }
+    stateMap[st][p.urgency_tier] = (stateMap[st][p.urgency_tier] || 0) + 1
+    stateMap[st].total++
+    stateMap[st].totalCost += p.proj_cost ?? 0
+  })
+  const stateData = Object.values(stateMap).sort((a, b) => b.total - a.total)
+  const STATE_COLORS = ['#0D9488', '#1B3A6B', '#7C3AED', '#B45309', '#065F46']
+
   // Avg risk by age group
   const ageRiskData = ageData.map(({ name }) => {
     const sub = patients.filter(p => {
@@ -205,6 +217,49 @@ export default function Analytics() {
                     <p className="text-xs font-bold text-teal-600">{avgRisk}%</p>
                     <p className="text-xs text-gray-500 mt-0.5">{name}</p>
                     <p className="text-xs text-gray-400">{count.toLocaleString()} pts</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Row 3 — State distribution */}
+          <div className="card">
+            <p className="text-sm font-semibold text-gray-800 mb-1">Patient Distribution by State</p>
+            <p className="text-xs text-gray-400 mb-4">
+              Urgency tier breakdown across all registry states
+            </p>
+            <div className="grid grid-cols-1 gap-4">
+              <ResponsiveContainer width="100%" height={120}>
+                <BarChart data={stateData} layout="vertical" barSize={30} margin={{ left: 90, right: 20 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" horizontal={false} />
+                  <XAxis type="number" tick={{ fontSize: 9, fill: '#9CA3AF' }} axisLine={false} tickLine={false} />
+                  <YAxis
+                    type="category" dataKey="state"
+                    tick={{ fontSize: 11, fill: '#374151', fontWeight: 600 }}
+                    axisLine={false} tickLine={false} width={85}
+                  />
+                  <Tooltip content={<CustomTooltip />} />
+                  <Legend wrapperStyle={{ fontSize: 10 }} />
+                  {['URGENT','HIGH','MODERATE','LOW'].map(t => (
+                    <Bar key={t} dataKey={t} stackId="a" fill={TIER_COLORS[t]}
+                      radius={t === 'LOW' ? [0,4,4,0] : [0,0,0,0]} />
+                  ))}
+                </BarChart>
+              </ResponsiveContainer>
+              <div className="grid gap-3" style={{ gridTemplateColumns: `repeat(${stateData.length}, 1fr)` }}>
+                {stateData.map((s, i) => (
+                  <div key={s.state} className="p-3 bg-gray-50 rounded-xl border-l-4" style={{ borderColor: STATE_COLORS[i] }}>
+                    <p className="text-xs font-bold text-gray-800">{s.state}</p>
+                    <p className="text-lg font-black text-gray-900 mt-1">{s.total.toLocaleString()}</p>
+                    <p className="text-xs text-gray-500 mt-0.5">patients</p>
+                    <div className="mt-2 space-y-0.5">
+                      <p className="text-xs"><span className="font-semibold text-red-600">{s.URGENT.toLocaleString()}</span> <span className="text-gray-400">URGENT</span></p>
+                      <p className="text-xs"><span className="font-semibold text-orange-600">{s.HIGH.toLocaleString()}</span> <span className="text-gray-400">HIGH</span></p>
+                      <p className="text-xs"><span className="font-semibold text-yellow-600">{s.MODERATE.toLocaleString()}</span> <span className="text-gray-400">MODERATE</span></p>
+                      <p className="text-xs"><span className="font-semibold text-green-600">{s.LOW.toLocaleString()}</span> <span className="text-gray-400">LOW</span></p>
+                    </div>
+                    <p className="text-xs text-gray-400 mt-2">${(s.totalCost / 1e6).toFixed(1)}M proj. cost</p>
                   </div>
                 ))}
               </div>
