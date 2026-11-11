@@ -30,7 +30,7 @@ CKDPredict gives clinicians a **real-time risk registry** of their CKD patient p
 
 | Feature | Description |
 |--------|-------------|
-| 🤖 **XGBoost Ensemble** | Two specialized models — Model A (Diabetic, 22 features) and Model B (Non-Diabetic, 26 features) — with **93.5% AUROC** and **93.5% sensitivity** |
+| 🤖 **XGBoost Ensemble** | Two specialized models — Model A (Diabetic, 22 features) and Model B (Non-Diabetic, 26 features) — with **93.5% AUROC** and **88.7%–90.9% sensitivity** |
 | 📋 **Patient Registry** | 22,990-patient table with 9 sortable columns, 7 active filters (tier, model, state, city, gender, age, risk score), and color-coded WCAG-AA risk badges |
 | 🏥 **KDIGO 2024 Guidance** | Click any patient → slide-out panel with tier-specific clinical recommendations: Action, Medications, Labs, Targets |
 | 💰 **Cost Avoidance Model** | $70K/patient cost baseline with interactive what-if slider — projects real-time savings at any intervention rate |
@@ -88,9 +88,8 @@ Diabetic   Non-Diabetic
 | Metric | Model A (Diabetic) | Model B (Non-Diabetic) | Charter Target |
 |--------|-------------------|----------------------|----------------|
 | **AUROC** | 93.44% | 97.53% | ≥ 82% ✅ |
-| **Sensitivity** | 93.54% | 94.12% | ≥ 75% ✅ |
-| **Specificity** | 98.71% | 97.93% | — |
-| **Accuracy** | 95.2% | 96.1% | — |
+| **Sensitivity (Recall)** | 88.7% | 90.9% | ≥ 75% ✅ |
+| **Specificity** | 99.1% | 98.5% | — |
 | **KFRE Concordance** | 0.94 | 0.91 | Benchmark ✅ |
 
 > **Note on high AUC:** Synthea generates synthetic patients with deterministic disease patterns — high separation is expected. Clinical validity is confirmed via KFRE concordance and SHAP-verified feature importance (eGFR ranked #1 predictor).
