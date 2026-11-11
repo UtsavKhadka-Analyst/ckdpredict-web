@@ -30,7 +30,7 @@ CKDPredict gives clinicians a **real-time risk registry** of their CKD patient p
 
 | Feature | Description |
 |--------|-------------|
-| 🤖 **XGBoost Ensemble** | Two specialized models — Model A (Diabetic, 22 features) and Model B (Non-Diabetic, 26 features) — with **99% AUROC** and **93.5% sensitivity** |
+| 🤖 **XGBoost Ensemble** | Two specialized models — Model A (Diabetic, 22 features) and Model B (Non-Diabetic, 26 features) — with **93.5% AUROC** and **93.5% sensitivity** |
 | 📋 **Patient Registry** | 22,990-patient table with 9 sortable columns, 7 active filters (tier, model, state, city, gender, age, risk score), and color-coded WCAG-AA risk badges |
 | 🏥 **KDIGO 2024 Guidance** | Click any patient → slide-out panel with tier-specific clinical recommendations: Action, Medications, Labs, Targets |
 | 💰 **Cost Avoidance Model** | $70K/patient cost baseline with interactive what-if slider — projects real-time savings at any intervention rate |
@@ -87,7 +87,7 @@ Diabetic   Non-Diabetic
 
 | Metric | Model A (Diabetic) | Model B (Non-Diabetic) | Charter Target |
 |--------|-------------------|----------------------|----------------|
-| **AUROC** | 99.02% | 99.58% | ≥ 82% ✅ |
+| **AUROC** | 93.44% | 97.53% | ≥ 82% ✅ |
 | **Sensitivity** | 93.54% | 94.12% | ≥ 75% ✅ |
 | **Specificity** | 98.71% | 97.93% | — |
 | **Accuracy** | 95.2% | 96.1% | — |
