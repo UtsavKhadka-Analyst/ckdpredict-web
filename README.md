@@ -252,10 +252,10 @@ All 25 project charter requirements are implemented and verified:
 
 | Name | Role |
 |------|------|
-| **Utsav Khadka** | Full-Stack Development · ML Pipeline · Deployment |
-| **Sharan Nambiar** | Data Engineering · Analytics · Synthea Pipeline |
-| **Vamsidhar Balaji** | ML Modeling · Model Validation · Cost Analysis |
-| **Sai Praveen Choutapally** | Clinical Research · KDIGO Integration · Documentation |
+| **Utsav Khadka** | Full-Stack Development · ML Pipeline · Deployment ·Clinical Research · KDIGO Integration|
+| **Sridhar Reddy** | Data Engineering · Analytics · Synthea Pipeline ·Clinical Research|
+| **Charan Kumar Paka** |  Documentation · Model Validation · Cost Analysis ·Clinical Research|
+
 
 **Course:** MS Analytics — Major Research Project · Saint Louis University · Spring 2026  
 **Advisor:** Saint Louis University School of Science and Engineering
